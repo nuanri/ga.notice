@@ -23,6 +23,9 @@ tags:
 - name: role
   description: 角色
 
+- name: notice
+  description: 通知
+
 paths:
 
   "/_spec":
@@ -44,6 +47,51 @@ paths:
       responses:
         "200":
           description: 返回 "ok" 表示服务运行健康
+
+  "/sms":
+
+    parameters:
+    - $ref: '#/parameters/Authorization'
+
+    post:
+      tags:
+      - notice
+      summary: 发送短信验证码
+      parameters:
+      - name: body
+        in: body
+        schema:
+          type: object
+          required:
+          - phone
+          - text
+          properties:
+            phone:
+              type: string
+              description: 手机号码
+              minLength: 11
+              maxLength: 11
+            text:
+              type: string
+              description: 通知内容
+              minLength: 8
+              maxLength: 128
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                default: "success"
+        default:
+          description: |
+            返回错误信息
+            error 值及含义：
+            - `name-exist` : 名字已经存在
+          schema:
+            $ref: '#/definitions/DefaultErrorResponse'
 
   "/role":
 
@@ -192,8 +240,7 @@ paths:
             - `not-found` : 名称不存在
           schema:
             $ref: '#/definitions/DefaultErrorResponse'
-
-
+            
 definitions:
 
   DefaultErrorResponse:
