@@ -65,6 +65,7 @@ class BaseTestCase(tornado.testing.AsyncHTTPTestCase):
 
     def get_app(self):
         settings.DEBUG = False
+        settings.USE_MOCK = True
         return make_app()
 
     @classmethod

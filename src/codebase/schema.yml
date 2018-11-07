@@ -72,10 +72,17 @@ paths:
               minLength: 11
               maxLength: 11
             text:
-              type: string
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 用户名
+                code:
+                  type: string
+                  description: 验证码
+                  minLength: 6
+                  maxLength: 6
               description: 通知内容
-              minLength: 8
-              maxLength: 128
       responses:
         "200":
           description: OK

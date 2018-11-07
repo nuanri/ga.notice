@@ -9,5 +9,6 @@ nose2==0.8.0
 pylint==2.1.1
 coverage==4.5.1
 requests
+requests-mock==1.5.2
 codecov
 git+https://gitlab.com/pycqa/flake8#egg=flake8

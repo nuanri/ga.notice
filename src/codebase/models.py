@@ -128,3 +128,14 @@ def insert_initial_roles(*args, **kwargs):
     db.add(Role(name='anonymous'))
     db.add(Role(name='authenticated'))
     db.commit()
+
+
+class Sms(ORMBase):
+
+    __tablename__ = "sms_record"
+
+    id = Column(Integer, Sequence("sms_record_id_seq"), primary_key=True)
+    phone = Column(String(11))
+    name = Column(String(512))
+    code = Column(String(6))
+    created = Column(DateTime(), default=datetime.datetime.utcnow)
