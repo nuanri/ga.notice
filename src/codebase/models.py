@@ -130,12 +130,13 @@ def insert_initial_roles(*args, **kwargs):
     db.commit()
 
 
-class Sms(ORMBase):
+class Notice(ORMBase):
 
-    __tablename__ = "sms_record"
+    __tablename__ = "notice_record"
 
-    id = Column(Integer, Sequence("sms_record_id_seq"), primary_key=True)
+    id = Column(Integer, Sequence("notice_record_id_seq"), primary_key=True)
     phone = Column(String(11))
+    email = Column(String(64))
     name = Column(String(512))
     code = Column(String(6))
     created = Column(DateTime(), default=datetime.datetime.utcnow)

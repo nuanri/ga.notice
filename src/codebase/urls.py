@@ -23,8 +23,11 @@ HANDLERS = [
         r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})",
         role.SingleRoleHandler),
 
-    # Sms
+    # notice
 
     url(r"/sms",
         notice.SmsHandler),
+
+    url(r"/email",
+        notice.EmailHandler),
 ]

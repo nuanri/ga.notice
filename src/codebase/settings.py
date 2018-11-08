@@ -17,5 +17,13 @@ SMS_KEY = ""
 SMS_URL = "http://www.sendcloud.net/smsapi/send"
 TEMPLATE_ID = 21325
 
+EMAIL_API_USER = ""
+EMAIL_API_KEY = ""
+EMAIL_URL = "http://api.sendcloud.net/apiv2/mail/sendtemplate"
+TEMPLATE_NAME = "auth_code"
+FROM_EMAIL = ""
+FROM_NAME = ""
+EMAIL_SUBJECT = ""
+
 # USE_MOCK 为 True 时为使用 mock，为 False 时不使用 mock
 USE_MOCK = False

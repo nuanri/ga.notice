@@ -100,6 +100,56 @@ paths:
           schema:
             $ref: '#/definitions/DefaultErrorResponse'
 
+  "/email":
+
+    parameters:
+    - $ref: '#/parameters/Authorization'
+
+    post:
+      tags:
+      - notice
+      summary: 发送邮件验证码
+      parameters:
+      - name: body
+        in: body
+        schema:
+          type: object
+          required:
+          - email
+          - text
+          properties:
+            email:
+              type: string
+              description: 邮件地址
+            text:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: 用户名
+                code:
+                  type: string
+                  description: 验证码
+                  minLength: 6
+                  maxLength: 6
+              description: 通知内容
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                default: "success"
+        default:
+          description: |
+            返回错误信息
+            error 值及含义：
+            - `name-exist` : 名字已经存在
+          schema:
+            $ref: '#/definitions/DefaultErrorResponse'
+
   "/role":
 
     parameters:
@@ -247,7 +297,7 @@ paths:
             - `not-found` : 名称不存在
           schema:
             $ref: '#/definitions/DefaultErrorResponse'
-            
+
 definitions:
 
   DefaultErrorResponse:

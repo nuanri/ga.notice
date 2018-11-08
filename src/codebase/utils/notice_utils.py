@@ -10,9 +10,16 @@ from eva.conf import settings
 SMS_MOCK_PARAM = {
     'result': True,
     'statusCode': 200,
-    'message': 'mock请求成功',
-    'info': {'successCount': "mock成功", 'smsIds': ['mock成功']}
-    }
+    'message': 'mock 请求成功',
+    'info': {'successCount': "mock 成功", 'smsIds': ['mock 成功']}
+}
+
+EMAIL_MOCK_PARAM = {
+    "result": "true",
+    "statusCode": 200,
+    "message": "mock 请求成功",
+    "info": {"emailIdList": ["mock 成功"]}
+}
 
 
 def sms_custom_param(**data):
@@ -37,6 +44,29 @@ def sms_custom_param(**data):
     )
     sign = hashlib.md5(sign_str.encode('utf-8')).hexdigest()
     param['signature'] = sign
+
+    return param
+
+
+def email_custom_param(**data):
+
+    xsmtpapi = {
+        'to': [data["email"]],
+        'sub': {
+            '%name%': [data["name"]],
+            '%code%': [data["code"]],
+        }
+    }
+
+    param = {
+        "apiUser": settings.EMAIL_API_USER,  # 使用apiUser和apiKey进行验证
+        "apiKey": settings.EMAIL_API_KEY,
+        "templateInvokeName": settings.TEMPLATE_NAME,  # 模版名称
+        "xsmtpapi": json.dumps(xsmtpapi),
+        "from": settings.FROM_EMAIL,  # 发信人, 用正确邮件地址替代
+        "fromName": settings.FROM_NAME,
+        "subject": settings.EMAIL_SUBJECT  # 邮件标题
+    }
 
     return param
 
