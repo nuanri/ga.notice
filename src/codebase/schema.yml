@@ -64,25 +64,20 @@ paths:
           type: object
           required:
           - phone
-          - text
+          - template_id
+          - template_args
           properties:
             phone:
               type: string
               description: 手机号码
               minLength: 11
               maxLength: 11
-            text:
+            template_id:
+              type: integer
+              description: 调用模版 id
+            template_args:
               type: object
-              properties:
-                name:
-                  type: string
-                  description: 用户名
-                code:
-                  type: string
-                  description: 验证码
-                  minLength: 6
-                  maxLength: 6
-              description: 通知内容
+              description: 通知内容，字典中的 value 为 int 或者 str
       responses:
         "200":
           description: OK
@@ -116,23 +111,19 @@ paths:
           type: object
           required:
           - email
-          - text
+          - template_name
+          - template_args
           properties:
             email:
               type: string
               description: 邮件地址
-            text:
+            template_name:
+              type: string
+              description: 调用模版名称
+            template_args:
               type: object
-              properties:
-                name:
-                  type: string
-                  description: 用户名
-                code:
-                  type: string
-                  description: 验证码
-                  minLength: 6
-                  maxLength: 6
-              description: 通知内容
+              description: 通知内容，字典中的 value 为 int 或者 str
+
       responses:
         "200":
           description: OK

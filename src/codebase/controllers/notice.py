@@ -1,77 +1,89 @@
 # pylint: disable=W0223,W0221,broad-except
+import json
+
+from tornado.web import HTTPError
 
 from codebase.web import APIRequestHandler
 from codebase.models import Notice
 from eva.conf import settings
-from codebase.utils.notice_utils import (
-    get_response,
-    sms_custom_param,
-    SMS_MOCK_PARAM,
-    email_custom_param,
-    EMAIL_MOCK_PARAM,
+from codebase.utils.sendcloud import (
+    SendCloudSms,
+    SendCloudEmail
 )
 
 
-class SmsHandler(APIRequestHandler):
+
+
+class _BaseNoticeRoleHandler(APIRequestHandler):
+
+    def get_uid(self):
+        uid = self.request.headers.get("X-User-Id")
+        if not uid:
+            raise HTTPError(403, reason="no-x-user-id")
+        return uid
+
+    def validate_data(self):
+        body = self.get_body_json()
+        for k, v in body["template_args"].items():
+            if not isinstance(k, str):
+                self.fail("字典 key 类型错误")
+                return False
+            if not isinstance(v, (int, str)):
+                self.fail("字典 value 类型错误")
+                return False
+        return True
+
+
+class SmsHandler(_BaseNoticeRoleHandler):
 
     def post(self):
         """发送手机验证码
         """
+        if not self.validate_data():
+            return
+
         body = self.get_body_json()
 
-        data = {
-            "phone": body["phone"],
-            "name": body["text"]["name"],
-            "code": body["text"]["code"]
-        }
-
-        param = sms_custom_param(**data)
-        res = get_response(settings.SMS_URL, param, SMS_MOCK_PARAM)
-
-        if res.json().get("statusCode") != 200:
-            err = {}
-            err["message"] = res.json().get("message")
-            err["info"] = res.json().get("info")
-
+        sendcloud = SendCloudSms(settings.SMS_URL, body)
+        err = sendcloud.send()
+        if err:
             self.fail(err)
             return
 
         notice = Notice(
-            name=body["text"]["name"],
-            code=body["text"]["code"],
             phone=body["phone"],
+            template_id=int(body["template_id"]),
+            template_args=json.dumps(body["template_args"]),
+            uid=self.get_uid(),
+            type="sms"
         )
         self.db.add(notice)
         self.db.commit()
         self.success()
 
 
-class EmailHandler(APIRequestHandler):
+class EmailHandler(_BaseNoticeRoleHandler):
 
     def post(self):
+        '''发送邮箱验证码
+        '''
+        if not self.validate_data():
+            return
 
         body = self.get_body_json()
 
-        data = {
-            "email": body["email"],
-            "name": body["text"]["name"],
-            "code": body["text"]["code"]
-        }
-        param = email_custom_param(**data)
-        res = get_response(settings.EMAIL_URL, param, EMAIL_MOCK_PARAM)
-
-        if res.json().get("statusCode") != 200:
-            err = {}
-            err["message"] = res.json().get("message")
-            err["info"] = res.json().get("info")
-
+        sendcloud = SendCloudEmail(settings.EMAIL_URL, body)
+        err = sendcloud.send()
+        if err:
             self.fail(err)
             return
 
         notice = Notice(
-            name=body["text"]["name"],
-            code=body["text"]["code"],
+            template_name=body["template_name"],
+            template_args=json.dumps(body["template_args"]),
             email=body["email"],
+            uid=self.get_uid(),
+            type="email"
         )
         self.db.add(notice)
         self.db.commit()
