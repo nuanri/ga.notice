@@ -1,7 +1,7 @@
 # pylint: disable=W0223,W0221,broad-except
 import json
 
-from tornado.web import HTTPError
+# from tornado.web import HTTPError
 
 from codebase.web import APIRequestHandler
 from codebase.models import Notice
@@ -12,15 +12,13 @@ from codebase.utils.sendcloud import (
 )
 
 
-
-
 class _BaseNoticeRoleHandler(APIRequestHandler):
 
-    def get_uid(self):
-        uid = self.request.headers.get("X-User-Id")
-        if not uid:
-            raise HTTPError(403, reason="no-x-user-id")
-        return uid
+    # def get_uid(self):
+    #     uid = self.request.headers.get("X-User-Id")
+    #     if not uid:
+    #         raise HTTPError(403, reason="no-x-user-id")
+    #     return uid
 
     def validate_data(self):
         body = self.get_body_json()
@@ -54,7 +52,7 @@ class SmsHandler(_BaseNoticeRoleHandler):
             phone=body["phone"],
             template_id=int(body["template_id"]),
             template_args=json.dumps(body["template_args"]),
-            uid=self.get_uid(),
+            uid=self.current_user.uuid,
             type="sms"
         )
         self.db.add(notice)
@@ -82,7 +80,7 @@ class EmailHandler(_BaseNoticeRoleHandler):
             template_name=body["template_name"],
             template_args=json.dumps(body["template_args"]),
             email=body["email"],
-            uid=self.get_uid(),
+            uid=self.current_user.uuid,
             type="email"
         )
         self.db.add(notice)
